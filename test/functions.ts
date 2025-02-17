@@ -26,7 +26,7 @@ const release_test_macro = test.macro(
     t,
     input_version: string,
     expected_version: string,
-    is_edge_older: Boolean
+    is_edge_older: boolean
   ) => {
     const releases_set = [
       nf_release_gen("v21.05.1-edge"),

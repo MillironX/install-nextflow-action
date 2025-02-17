@@ -1,15 +1,22 @@
-{
-  "plugins": ["ava", "@typescript-eslint", "simple-import-sort"],
-  "extends": ["plugin:github/recommended", "plugin:ava/recommended"],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 9,
-    "sourceType": "module",
-    "project": "./tsconfig.json"
+import eslint from "@eslint/js"
+import ava from "eslint-plugin-ava"
+import github from "eslint-plugin-github"
+import simpleImportSort from "eslint-plugin-simple-import-sort"
+import tseslint from "typescript-eslint"
+import globals from "globals"
+
+export default tseslint.config({
+  files: ["**/*.ts"],
+  extends: [
+    eslint.configs.recommended,
+    tseslint.configs.recommended,
+    github.getFlatConfigs().recommended,
+    ava.configs["flat/recommended"]
+  ],
+  plugins: {
+    "simple-import-sort": simpleImportSort
   },
-  "rules": {
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
+  rules: {
     "i18n-text/no-en": "off",
     "eslint-comments/no-use": "off",
     "import/no-namespace": "off",
@@ -17,17 +24,17 @@
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/explicit-member-accessibility": [
       "error",
-      { "accessibility": "no-public" }
+      { accessibility: "no-public" }
     ],
     "@typescript-eslint/no-require-imports": "error",
     "@typescript-eslint/array-type": "error",
     "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/ban-ts-comment": "error",
-    "camelcase": "off",
+    camelcase: "off",
     "@typescript-eslint/consistent-type-assertions": "error",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
-      { "allowExpressions": true }
+      { allowExpressions: true }
     ],
     "@typescript-eslint/no-array-constructor": "error",
     "@typescript-eslint/no-empty-interface": "error",
@@ -49,12 +56,20 @@
     "@typescript-eslint/promise-function-async": "error",
     "@typescript-eslint/require-array-sort-compare": "error",
     "@typescript-eslint/restrict-plus-operands": "error",
-    "semi": "off",
+    semi: "off",
     "sort-imports": "off",
-    "@typescript-eslint/unbound-method": "error"
+    "@typescript-eslint/unbound-method": "error",
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   },
-  "env": {
-    "node": true,
-    "es6": true
+  languageOptions: {
+    parserOptions: {
+      ecmaVersion: 9,
+      sourceType: "module",
+      project: "./tsconfig.json"
+    },
+    ecmaVersion: 6,
+    sourceType: "commonjs",
+    globals: { ...globals.node }
   }
-}
+})
