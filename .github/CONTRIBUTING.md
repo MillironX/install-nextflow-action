@@ -86,6 +86,51 @@ npm run lint:fix
 
 to have these tools fix the code formatting for you.
 
+## Build process
+
+GitHub Actions does not have an automated system for building and releasing actions written in TypeScript.[^1]
+Technically speaking, a published GitHub action is not actually a package, but simply a git reference to a complete JavaScript execution tree with an `action.yml` file.
+As such, the process for releasing a new version of `nf-core/setup-nextflow` is as follows:
+
+1. Clone the `nf-core/setup-nextflow` repository locally - releases cannot be made from a fork
+2. Bump the version number within `CHANGELOG.md`, `package.json`, and `package-lock.json`
+3. Commit those changes to a branch of the name `release/vX.Y.Z`
+4. Push that branch to GitHub (`git push -u origin release/vX.Y.Z`) and merge as a regular pull request
+5. Back in the local repo, ensure you still have the `release/vX.Y.Z` branch checked out
+6. Checkout an orphan branch of the name `build/vX.Y.Z` (`git checkout --orphan build/vX.Y.Z`). All changes will be untracked and unstaged.
+7. Run `npm ci` and `npm run all`
+8. Commit the following files/directories:
+   - dist
+   - docs
+   - subaction
+   - CHANGELOG.md
+   - LICENSE
+   - README.md
+   - action.yml
+9. Delete all untracked files
+10. Remove major and major.minor version tags for this version from the remote repository
+    ```bash
+    git push origin :vX
+    git push origin :vX.Y
+    ```
+11. Tag the current commit with the major, major.minor, and major.minor.patch semantic versions. If git prompts you for a tag message, use the full major.minor.patch version string.
+    ```bash
+    git tag vX
+    git tag vX.Y
+    git tag vX.Y.Z
+    ```
+12. Push the tags to GitHub (`git push --tags`)
+13. (Optional) In the GitHub interface, create a [release](https://github.com/nf-core/setup-nextflow/releases) assigned to the tag with content copied from the CHANGELOG, and ensure it is published to the GitHub Marketplace
+14. Delete the release and build branch within the local repo
+    ```bash
+    git checkout master
+    git pull
+    git branch -d release/vX.Y.Z
+    git branch -D build/vX.Y.Z
+    ```
+
 ## Getting help
 
 For further information/help, please don't hesitate to get in touch on the nf-core Slack [#tools](https://nfcore.slack.com/channels/tools) channel ([join our Slack here](https://nf-co.re/join/slack)).
+
+[^1]: [JasonEtco/build-and-tag-action](https://github.com/JasonEtco/build-and-tag-action) exists but does not function for TypeScript actions. See <https://github.com/JasonEtco/build-and-tag-action/issues/20>
